@@ -1,0 +1,303 @@
+/* ============================================
+   Smart Greenhouse - Login Page CSS
+   Theme: Futuristic Smart Farming (Dark)
+   ============================================ */
+
+:root {
+    --green-primary: #00ff88;
+    --green-dark: #00cc6a;
+    --green-glow: rgba(0, 255, 136, 0.3);
+    --green-dim: rgba(0, 255, 136, 0.08);
+    --bg-dark: #050a05;
+    --bg-card: rgba(8, 20, 8, 0.95);
+    --bg-input: rgba(0, 255, 136, 0.05);
+    --border-green: rgba(0, 255, 136, 0.25);
+    --text-primary: #e0ffe8;
+    --text-muted: rgba(180, 220, 190, 0.6);
+    --font-display: 'Orbitron', monospace;
+    --font-body: 'Rajdhani', sans-serif;
+    --danger: #ff4466;
+    --warning: #ffaa00;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    min-height: 100vh;
+    background: var(--bg-dark);
+    font-family: var(--font-body);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+/* --- Background --- */
+.bg-grid {
+    position: fixed; inset: 0; z-index: 0;
+    background-image:
+        linear-gradient(rgba(0,255,136,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,136,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    animation: gridMove 20s linear infinite;
+}
+@keyframes gridMove { to { background-position: 40px 40px; } }
+
+.bg-particles { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+.particle {
+    position: absolute; border-radius: 50%;
+    background: var(--green-primary);
+    animation: particleFloat linear infinite;
+}
+@keyframes particleFloat {
+    0%   { transform: translateY(0) scale(1); opacity: 0.3; }
+    50%  { opacity: 0.6; }
+    100% { transform: translateY(-100px) scale(0); opacity: 0; }
+}
+
+/* Floating leaves */
+.leaf {
+    position: fixed; font-size: 1.5rem;
+    animation: leafFloat 10s ease-in-out infinite;
+    pointer-events: none; z-index: 1; opacity: 0.2;
+}
+.leaf-1 { top: 10%; left: 5%;  animation-delay: 0s; }
+.leaf-2 { top: 70%; left: 8%;  animation-delay: 2s; }
+.leaf-3 { top: 20%; right: 6%; animation-delay: 4s; }
+.leaf-4 { top: 80%; right: 5%; animation-delay: 6s; }
+@keyframes leafFloat {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    33%       { transform: translateY(-20px) rotate(15deg); }
+    66%       { transform: translateY(10px) rotate(-10deg); }
+}
+
+/* --- Wrapper --- */
+.login-wrapper {
+    position: relative; z-index: 10;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 1.5rem;
+    padding: 2rem 1rem;
+    animation: fadeSlideUp 0.8s ease forwards;
+}
+@keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Brand Section --- */
+.brand-section {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 1rem;
+}
+.brand-logo { position: relative; }
+.logo-ring {
+    width: 80px; height: 80px; border-radius: 50%;
+    border: 2px solid var(--green-primary);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    box-shadow: 0 0 20px var(--green-glow), inset 0 0 20px var(--green-dim);
+    animation: logoSpin 8s linear infinite;
+}
+.logo-ring::before {
+    content: ''; position: absolute; inset: -8px; border-radius: 50%;
+    border: 1px solid rgba(0,255,136,0.15);
+    animation: logoSpin 4s linear infinite reverse;
+}
+@keyframes logoSpin {
+    0%   { box-shadow: 0 0 20px var(--green-glow), 0 0 0px var(--green-glow); }
+    50%  { box-shadow: 0 0 40px var(--green-glow), 0 0 80px rgba(0,255,136,0.1); }
+    100% { box-shadow: 0 0 20px var(--green-glow), 0 0 0px var(--green-glow); }
+}
+.logo-inner {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: linear-gradient(135deg, #001a08, #003312);
+    display: flex; align-items: center; justify-content: center;
+}
+.logo-inner i { font-size: 1.6rem; color: var(--green-primary); }
+
+.brand-text { text-align: center; }
+.brand-title {
+    font-family: var(--font-display);
+    font-size: clamp(1rem, 3vw, 1.4rem);
+    font-weight: 900; letter-spacing: 0.3em;
+    color: var(--green-primary);
+    text-shadow: 0 0 20px var(--green-glow);
+}
+.brand-subtitle {
+    font-family: var(--font-display);
+    font-size: clamp(0.5rem, 1.5vw, 0.65rem);
+    letter-spacing: 0.5em; color: var(--text-muted);
+    margin-top: 0.2rem;
+}
+.brand-tag {
+    font-family: var(--font-body); font-size: 0.8rem;
+    color: var(--text-muted); letter-spacing: 0.1em;
+    margin-top: 0.5rem; display: flex; align-items: center; gap: 0.5rem;
+}
+.dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--green-primary);
+    animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* --- Login Card --- */
+.login-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-green);
+    border-radius: 16px;
+    padding: 2rem;
+    width: 100%; max-width: 400px;
+    box-shadow: 0 0 40px rgba(0,255,136,0.08), 0 20px 60px rgba(0,0,0,0.6);
+    position: relative; overflow: hidden;
+}
+.login-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--green-primary), transparent);
+}
+
+/* Status Bar */
+.status-bar {
+    display: flex; align-items: center; gap: 0.5rem;
+    margin-bottom: 1.2rem;
+    padding: 0.4rem 0.8rem;
+    background: rgba(0,255,136,0.05);
+    border: 1px solid rgba(0,255,136,0.15);
+    border-radius: 20px; width: fit-content;
+}
+.status-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green-primary);
+    animation: statusPulse 1.5s ease-in-out infinite;
+    box-shadow: 0 0 6px var(--green-primary);
+}
+@keyframes statusPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+.status-text {
+    font-family: var(--font-display); font-size: 0.55rem;
+    letter-spacing: 0.15em; color: var(--green-primary);
+}
+.status-time {
+    font-family: var(--font-display); font-size: 0.55rem;
+    color: var(--text-muted); margin-left: auto;
+}
+
+.card-title {
+    font-family: var(--font-display); font-size: 1.2rem;
+    font-weight: 700; letter-spacing: 0.2em;
+    color: var(--text-primary); margin-bottom: 0.3rem;
+}
+.card-sub { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.8rem; }
+
+/* --- Form --- */
+.input-group { margin-bottom: 1.5rem; }
+.input-label {
+    display: flex; align-items: center; gap: 0.4rem;
+    font-family: var(--font-display); font-size: 0.6rem;
+    letter-spacing: 0.15em; color: var(--green-primary);
+    margin-bottom: 0.5rem;
+}
+.input-wrapper { position: relative; }
+.form-input {
+    width: 100%; padding: 0.75rem 1rem;
+    background: var(--bg-input);
+    border: 1px solid var(--border-green);
+    border-radius: 8px; outline: none;
+    color: var(--text-primary);
+    font-family: var(--font-body); font-size: 1rem; letter-spacing: 0.05em;
+    transition: all 0.3s ease;
+}
+.form-input::placeholder { color: rgba(180,220,190,0.3); }
+.form-input:focus {
+    border-color: var(--green-primary);
+    background: rgba(0,255,136,0.08);
+    box-shadow: 0 0 0 3px rgba(0,255,136,0.1), 0 0 20px rgba(0,255,136,0.1);
+}
+.input-line {
+    position: absolute; bottom: 0; left: 50%; right: 50%; height: 2px;
+    background: var(--green-primary); transition: all 0.3s ease; border-radius: 2px;
+}
+.form-input:focus ~ .input-line { left: 0; right: 0; }
+.toggle-pw {
+    position: absolute; right: 0.8rem; top: 50%;
+    transform: translateY(-50%);
+    background: none; border: none; cursor: pointer;
+    color: var(--text-muted); transition: color 0.2s;
+}
+.toggle-pw:hover { color: var(--green-primary); }
+
+/* Alert */
+.alert-box {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.7rem 1rem;
+    background: rgba(255, 68, 102, 0.1);
+    border: 1px solid rgba(255, 68, 102, 0.3);
+    border-radius: 8px;
+    color: #ff8899; font-size: 0.85rem;
+    margin-bottom: 1rem;
+}
+.shake { animation: shakeAnim 0.5s ease; }
+@keyframes shakeAnim {
+    0%,100%{transform:translateX(0)}
+    20%{transform:translateX(-8px)}
+    40%{transform:translateX(8px)}
+    60%{transform:translateX(-5px)}
+    80%{transform:translateX(5px)}
+}
+
+/* Login Button */
+.btn-login {
+    width: 100%; padding: 0.85rem;
+    background: linear-gradient(135deg, #003312, #005522);
+    border: 1px solid var(--green-primary);
+    border-radius: 8px; cursor: pointer;
+    color: var(--green-primary);
+    font-family: var(--font-display); font-size: 0.75rem;
+    letter-spacing: 0.2em; font-weight: 700;
+    position: relative; overflow: hidden;
+    transition: all 0.3s ease;
+}
+.btn-login:hover:not(:disabled) {
+    background: linear-gradient(135deg, #005522, #007733);
+    box-shadow: 0 0 30px var(--green-glow);
+    transform: translateY(-1px);
+}
+.btn-login:disabled { opacity: 0.7; cursor: not-allowed; }
+.btn-login.success {
+    background: linear-gradient(135deg, #00aa55, #00cc66) !important;
+    border-color: #00ff88 !important;
+    color: #000 !important;
+}
+.btn-text, .btn-loader {
+    display: inline-flex; align-items: center;
+    justify-content: center; gap: 0.5rem;
+}
+.btn-glow {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, transparent 40%, rgba(0,255,136,0.1) 100%);
+    pointer-events: none;
+}
+
+/* Card Footer */
+.card-footer { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(0,255,136,0.1); }
+.security-badges {
+    display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center;
+}
+.badge {
+    font-size: 0.7rem; color: var(--text-muted);
+    background: rgba(0,255,136,0.05);
+    border: 1px solid rgba(0,255,136,0.1);
+    padding: 0.2rem 0.6rem; border-radius: 20px;
+    display: inline-flex; align-items: center; gap: 0.3rem;
+}
+
+.footer-note {
+    font-size: 0.7rem; color: rgba(180,220,190,0.3);
+    letter-spacing: 0.05em;
+}
+
+/* --- Mobile --- */
+@media (max-width: 480px) {
+    .login-card { padding: 1.5rem; border-radius: 12px; }
+    .brand-title { font-size: 1rem; }
+}

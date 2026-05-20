@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — Smart Greenhouse Monitoring System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+
+<!-- Mobile Overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- ========== SIDEBAR ========== -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <div class="sb-logo">
+            <i class="fas fa-seedling"></i>
+        </div>
+        <div class="sb-brand-text">
+            <span class="sb-title">GREENHOUSE</span>
+            <span class="sb-sub">MONITORING</span>
+        </div>
+        <button class="sidebar-close" id="sidebarClose"><i class="fas fa-times"></i></button>
+    </div>
+
+    <div class="sidebar-section">
+        <span class="section-label">NAVIGASI</span>
+        <nav class="sidebar-nav">
+            <a href="#dashboard" class="nav-item active" data-page="dashboard">
+                <span class="nav-icon"><i class="fas fa-chart-line"></i></span>
+                <span class="nav-text">Dashboard</span>
+                <span class="nav-indicator"></span>
+            </a>
+            <a href="#monitoring" class="nav-item" data-page="monitoring">
+                <span class="nav-icon"><i class="fas fa-broadcast-tower"></i></span>
+                <span class="nav-text">Live Monitoring</span>
+            </a>
+            <a href="#history" class="nav-item" data-page="history">
+                <span class="nav-icon"><i class="fas fa-history"></i></span>
+                <span class="nav-text">Riwayat Data</span>
+            </a>
+            <a href="#devices" class="nav-item" data-page="devices">
+                <span class="nav-icon"><i class="fas fa-microchip"></i></span>
+                <span class="nav-text">Perangkat ESP32</span>
+            </a>
+        </nav>
+    </div>
+
+    <div class="sidebar-section">
+        <span class="section-label">SENSOR STATUS</span>
+        <div class="sensor-list">
+            <div class="sensor-item">
+                <span class="sensor-dot temp"></span>
+                <span>DHT22 Suhu</span>
+                <span class="sensor-badge normal" id="sb-temp">NORMAL</span>
+            </div>
+            <div class="sensor-item">
+                <span class="sensor-dot hum"></span>
+                <span>DHT22 Kelembapan</span>
+                <span class="sensor-badge normal" id="sb-hum">NORMAL</span>
+            </div>
+            <div class="sensor-item">
+                <span class="sensor-dot ph"></span>
+                <span>Sensor pH</span>
+                <span class="sensor-badge normal" id="sb-ph">NORMAL</span>
+            </div>
+            <div class="sensor-item">
+                <span class="sensor-dot tds"></span>
+                <span>Sensor TDS</span>
+                <span class="sensor-badge normal" id="sb-tds">NORMAL</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="sidebar-footer">
+        <div class="device-status" id="deviceStatusSb">
+            <span class="dev-dot offline" id="devDotSb"></span>
+            <div class="dev-info">
+                <span class="dev-name" id="devNameSb">ESP32-GH-001</span>
+                <span class="dev-last" id="devLastSb">Menghubungkan...</span>
+            </div>
+        </div>
+        <button class="btn-logout" id="logoutBtn">
+            <i class="fas fa-power-off"></i> LOGOUT
+        </button>
+    </div>
+</aside>
+
+<!-- ========== MAIN CONTENT ========== -->
+<main class="main-content" id="mainContent">
+
+    <!-- Top Navbar -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="page-title">
+                <h1 id="pageTitle">Dashboard</h1>
+                <span class="breadcrumb">Smart Greenhouse &rsaquo; <span id="breadSub">Overview</span></span>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-clock">
+                <i class="fas fa-clock"></i>
+                <span id="topbarTime">00:00:00</span>
+            </div>
+            <div class="topbar-date" id="topbarDate">—</div>
+            <div class="refresh-btn" id="refreshBtn" title="Refresh Data">
+                <i class="fas fa-sync-alt" id="refreshIcon"></i>
+            </div>
+            <div class="user-chip">
+                <div class="user-avatar"><i class="fas fa-user-shield"></i></div>
+                <span class="user-name" id="topbarUser">Admin</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Scrollable content -->
+    <div class="content-scroll">
+
+        <!-- ====== STATUS BANNER ====== -->
+        <div class="status-banner" id="statusBanner">
+            <div class="banner-icon" id="bannerIcon"><i class="fas fa-check-circle"></i></div>
+            <div class="banner-text">
+                <span class="banner-title" id="bannerTitle">STATUS GREENHOUSE: NORMAL</span>
+                <span class="banner-sub" id="bannerSub">Semua parameter dalam kondisi optimal</span>
+            </div>
+            <div class="banner-pulse"></div>
+        </div>
+
+        <!-- ====== SENSOR CARDS ====== -->
+        <div class="cards-grid">
+
+            <!-- Temperature Card -->
+            <div class="sensor-card" id="card-temp">
+                <div class="card-bg-icon"><i class="fas fa-thermometer-half"></i></div>
+                <div class="card-top">
+                    <div class="card-icon temp">
+                        <i class="fas fa-thermometer-half"></i>
+                    </div>
+                    <div class="card-badge normal" id="badge-temp">NORMAL</div>
+                </div>
+                <div class="card-label">SUHU</div>
+                <div class="card-value" id="val-temp">
+                    <span class="val-number" id="num-temp">--</span>
+                    <span class="val-unit">°C</span>
+                </div>
+                <div class="card-meta">
+                    <span class="meta-sensor">DHT22</span>
+                    <span class="meta-range">Ideal: 20–35°C</span>
+                </div>
+                <div class="card-gauge">
+                    <div class="gauge-track">
+                        <div class="gauge-fill temp" id="gauge-temp" style="width:0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Humidity Card -->
+            <div class="sensor-card" id="card-hum">
+                <div class="card-bg-icon"><i class="fas fa-tint"></i></div>
+                <div class="card-top">
+                    <div class="card-icon hum">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <div class="card-badge normal" id="badge-hum">NORMAL</div>
+                </div>
+                <div class="card-label">KELEMBAPAN</div>
+                <div class="card-value" id="val-hum">
+                    <span class="val-number" id="num-hum">--</span>
+                    <span class="val-unit">%</span>
+                </div>
+                <div class="card-meta">
+                    <span class="meta-sensor">DHT22</span>
+                    <span class="meta-range">Ideal: 50–80%</span>
+                </div>
+                <div class="card-gauge">
+                    <div class="gauge-track">
+                        <div class="gauge-fill hum" id="gauge-hum" style="width:0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- pH Card -->
+            <div class="sensor-card" id="card-ph">
+                <div class="card-bg-icon"><i class="fas fa-flask"></i></div>
+                <div class="card-top">
+                    <div class="card-icon ph">
+                        <i class="fas fa-flask"></i>
+                    </div>
+                    <div class="card-badge normal" id="badge-ph">NORMAL</div>
+                </div>
+                <div class="card-label">pH AIR</div>
+                <div class="card-value" id="val-ph">
+                    <span class="val-number" id="num-ph">--</span>
+                    <span class="val-unit">pH</span>
+                </div>
+                <div class="card-meta">
+                    <span class="meta-sensor">pH Sensor</span>
+                    <span class="meta-range">Ideal: 5.5–7.5</span>
+                </div>
+                <div class="card-gauge">
+                    <div class="gauge-track">
+                        <div class="gauge-fill ph" id="gauge-ph" style="width:0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TDS Card -->
+            <div class="sensor-card" id="card-tds">
+                <div class="card-bg-icon"><i class="fas fa-water"></i></div>
+                <div class="card-top">
+                    <div class="card-icon tds">
+                        <i class="fas fa-water"></i>
+                    </div>
+                    <div class="card-badge normal" id="badge-tds">NORMAL</div>
+                </div>
+                <div class="card-label">TDS AIR</div>
+                <div class="card-value" id="val-tds">
+                    <span class="val-number" id="num-tds">--</span>
+                    <span class="val-unit">ppm</span>
+                </div>
+                <div class="card-meta">
+                    <span class="meta-sensor">TDS Sensor</span>
+                    <span class="meta-range">Ideal: 800–1800 ppm</span>
+                </div>
+                <div class="card-gauge">
+                    <div class="gauge-track">
+                        <div class="gauge-fill tds" id="gauge-tds" style="width:0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== UPDATE INFO ====== -->
+        <div class="update-bar">
+            <span class="upd-left">
+                <i class="fas fa-satellite-dish"></i>
+                <span id="lastUpdate">Data terakhir: --</span>
+            </span>
+            <span class="upd-right">
+                <span class="live-badge"><span class="live-dot"></span> LIVE</span>
+                Auto-refresh setiap 5 detik
+            </span>
+        </div>
+
+        <!-- ====== CHARTS ====== -->
+        <div class="charts-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-chart-area"></i> Grafik Realtime
+                </h2>
+                <div class="chart-controls">
+                    <button class="chart-btn active" data-range="20">20 Data</button>
+                    <button class="chart-btn" data-range="50">50 Data</button>
+                    <button class="chart-btn" data-range="100">100 Data</button>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <span><i class="fas fa-thermometer-half"></i> Suhu & Kelembapan</span>
+                        <span class="chart-live"><span class="live-dot"></span> LIVE</span>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="chartTempHum"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <span><i class="fas fa-flask"></i> pH & TDS Air</span>
+                        <span class="chart-live"><span class="live-dot"></span> LIVE</span>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="chartPhTds"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== HISTORY TABLE ====== -->
+        <div class="history-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-table"></i> Riwayat Data Sensor
+                </h2>
+                <div class="table-controls">
+                    <button class="tbl-btn" id="exportBtn">
+                        <i class="fas fa-download"></i> Export CSV
+                    </button>
+                    <button class="tbl-btn primary" id="loadMoreBtn">
+                        <i class="fas fa-list"></i> Muat Lebih
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="data-table" id="historyTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th><i class="fas fa-thermometer-half"></i> Suhu (°C)</th>
+                            <th><i class="fas fa-tint"></i> Kelembapan (%)</th>
+                            <th><i class="fas fa-flask"></i> pH</th>
+                            <th><i class="fas fa-water"></i> TDS (ppm)</th>
+                            <th><i class="fas fa-circle"></i> Status</th>
+                            <th><i class="fas fa-clock"></i> Waktu</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyBody">
+                        <tr><td colspan="7" class="table-loading"><i class="fas fa-spinner fa-spin"></i> Memuat data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="content-footer">
+            <span>Smart Greenhouse Monitoring System v1.0.0</span>
+            <span>ESP32 · DHT22 · pH Sensor · TDS Sensor</span>
+            <span>Node.js · Express · MySQL</span>
+        </footer>
+    </div>
+</main>
+
+<script src="../js/dashboard.js"></script>
+</body>
+</html>
