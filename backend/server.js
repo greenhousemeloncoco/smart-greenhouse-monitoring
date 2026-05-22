@@ -25,7 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 // ============================================
 // Static Files (Frontend)
 // ============================================
-app.use(express.static(path.join(__dirname, '../frontend')));
+app.use(express.static(path.join(__dirname, 'frontend')));
 
 // ============================================
 // API Routes
@@ -36,10 +36,10 @@ app.use('/api', require('./routes/api'));
 // Frontend Routes
 // ============================================
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/pages/login.html'));
+    res.sendFile(path.join(__dirname, 'frontend/pages/login.html'));
 });
 app.get('/dashboard', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/pages/dashboard.html'));
+    res.sendFile(path.join(__dirname, 'frontend/pages/dashboard.html'));
 });
 
 // ============================================
