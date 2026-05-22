@@ -1,35 +1,37 @@
 // controllers/authController.js
-const bcrypt = require('bcrypt');
+
 const jwt = require('jsonwebtoken');
 const db = require('../config/database');
 require('dotenv').config();
 
+// ============================================
+// LOGIN CONTROLLER
+// ============================================
 const login = async (req, res) => {
-    const { username, password } = req.body;
-
-    // DEBUG LOGIN
-    console.log('================ LOGIN DEBUG ================');
-    console.log('Request Body:', req.body);
-    console.log('Username Input:', username);
-    console.log('Password Input:', password);
-
-    if (!username || !password) {
-        return res.status(400).json({
-            success: false,
-            message: 'Username and password are required'
-        });
-    }
-
     try {
+        const { username, password } = req.body;
+
+        console.log('================ LOGIN DEBUG ================');
+        console.log('Username Input:', username);
+
+        // Validasi input
+        if (!username || !password) {
+            return res.status(400).json({
+                success: false,
+                message: 'Username and password are required'
+            });
+        }
+
+        // Cari user admin
         const [rows] = await db.execute(
-            'SELECT * FROM admins WHERE username = ?',
+            'SELECT * FROM admins WHERE username = ? LIMIT 1',
             [username]
         );
 
-        console.log('Database Result:', rows);
-
+        // Jika user tidak ditemukan
         if (rows.length === 0) {
             console.log('Username not found');
+
             return res.status(401).json({
                 success: false,
                 message: 'Invalid credentials'
@@ -38,30 +40,52 @@ const login = async (req, res) => {
 
         const admin = rows[0];
 
-        console.log('Stored Hash:', admin.password);
+        console.log('Database User Found:', admin.username);
 
-        const passwordMatch = await bcrypt.compare(password, admin.password);
+        // ============================================
+        // PLAIN PASSWORD CHECK
+        // ============================================
+        const passwordMatch = password === admin.password;
 
         console.log('Password Match:', passwordMatch);
 
         if (!passwordMatch) {
             console.log('Password does not match');
+
             return res.status(401).json({
                 success: false,
                 message: 'Invalid credentials'
             });
         }
 
+        // ============================================
+        // JWT TOKEN
+        // ============================================
+        if (!process.env.JWT_SECRET) {
+            return res.status(500).json({
+                success: false,
+                message: 'JWT_SECRET is missing'
+            });
+        }
+
         const token = jwt.sign(
-            { id: admin.id, username: admin.username },
+            {
+                id: admin.id,
+                username: admin.username
+            },
             process.env.JWT_SECRET,
-            { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
+            {
+                expiresIn: process.env.JWT_EXPIRES_IN || '24h'
+            }
         );
 
-        console.log('Login Success');
+        console.log('✅ Login Success');
         console.log('============================================');
 
-        res.json({
+        // ============================================
+        // SUCCESS RESPONSE
+        // ============================================
+        return res.status(200).json({
             success: true,
             message: 'Login successful',
             data: {
@@ -76,21 +100,28 @@ const login = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Login error:', error);
 
-        res.status(500).json({
+        console.error('❌ Login Error:', error);
+
+        return res.status(500).json({
             success: false,
             message: 'Server error'
         });
     }
 };
 
-const verifyToken = (req, res) => {
-    res.json({
+// ============================================
+// VERIFY TOKEN
+// ============================================
+const verifyToken = async (req, res) => {
+    return res.status(200).json({
         success: true,
         message: 'Token is valid',
-        data: { user: req.user }
+        data: req.user
     });
 };
 
-module.exports = { login, verifyToken };
+module.exports = {
+    login,
+    verifyToken
+};
