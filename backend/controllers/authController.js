@@ -8,39 +8,55 @@ require('dotenv').config();
 // LOGIN CONTROLLER
 // ============================================
 const login = async (req, res) => {
+
     try {
+
         const { username, password } = req.body;
 
         console.log('================ LOGIN DEBUG ================');
         console.log('Username Input:', username);
+        console.log('Password Input:', password);
 
-        // Validasi input
+        // ============================================
+        // VALIDASI INPUT
+        // ============================================
         if (!username || !password) {
+
             return res.status(400).json({
                 success: false,
                 message: 'Username and password are required'
             });
+
         }
 
-        // Cari user admin
+        // ============================================
+        // CEK USER DI DATABASE
+        // ============================================
         const [rows] = await db.execute(
             'SELECT * FROM admins WHERE username = ? LIMIT 1',
             [username]
         );
 
-        // Jika user tidak ditemukan
+        console.log('Database Result:', rows);
+
+        // ============================================
+        // USER TIDAK DITEMUKAN
+        // ============================================
         if (rows.length === 0) {
+
             console.log('Username not found');
 
             return res.status(401).json({
                 success: false,
                 message: 'Invalid credentials'
             });
+
         }
 
         const admin = rows[0];
 
         console.log('Database User Found:', admin.username);
+        console.log('Database Password:', admin.password);
 
         // ============================================
         // PLAIN PASSWORD CHECK
@@ -49,25 +65,35 @@ const login = async (req, res) => {
 
         console.log('Password Match:', passwordMatch);
 
+        // ============================================
+        // PASSWORD SALAH
+        // ============================================
         if (!passwordMatch) {
+
             console.log('Password does not match');
 
             return res.status(401).json({
                 success: false,
                 message: 'Invalid credentials'
             });
+
         }
 
         // ============================================
-        // JWT TOKEN
+        // JWT SECRET CHECK
         // ============================================
         if (!process.env.JWT_SECRET) {
+
             return res.status(500).json({
                 success: false,
                 message: 'JWT_SECRET is missing'
             });
+
         }
 
+        // ============================================
+        // GENERATE TOKEN
+        // ============================================
         const token = jwt.sign(
             {
                 id: admin.id,
@@ -107,20 +133,27 @@ const login = async (req, res) => {
             success: false,
             message: 'Server error'
         });
+
     }
+
 };
 
 // ============================================
 // VERIFY TOKEN
 // ============================================
 const verifyToken = async (req, res) => {
+
     return res.status(200).json({
         success: true,
         message: 'Token is valid',
         data: req.user
     });
+
 };
 
+// ============================================
+// EXPORT
+// ============================================
 module.exports = {
     login,
     verifyToken
