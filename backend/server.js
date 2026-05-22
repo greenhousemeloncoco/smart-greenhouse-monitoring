@@ -25,7 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 // ============================================
 // Static Files (Frontend)
 // ============================================
-app.use(express.static(path.join(__dirname, '../frontend')));
+
 
 // ============================================
 // API Routes
@@ -39,8 +39,11 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/pages/login.html'));
 });
 
-app.get('/dashboard', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/pages/dashboard.html'));
+app.get('/', (req, res) => {
+    res.json({
+        success: true,
+        message: 'Smart Greenhouse Backend Running'
+    });
 });
 
 // ============================================
