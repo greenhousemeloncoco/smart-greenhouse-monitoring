@@ -104,3 +104,9 @@ INSERT INTO sensor_data (device_id, temperature, humidity, ph_level, tds_value, 
 ('ESP32-GH-001', 33.2, 78.3, 6.2, 1380.2, 'warning', 'normal', 'normal', 'normal', 'warning', NOW() - INTERVAL 10 MINUTE),
 ('ESP32-GH-001', 27.8, 69.4, 6.8, 1290.6, 'normal', 'normal', 'normal', 'normal', 'normal', NOW() - INTERVAL 5 MINUTE),
 ('ESP32-GH-001', 26.9, 68.8, 6.7, 1275.1, 'normal', 'normal', 'normal', 'normal', 'normal', NOW());
+
+SELECT * FROM admins;
+
+UPDATE admins
+SET password = 'admin123'
+WHERE username = 'admin';
